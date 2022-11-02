@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 
 const roleSchema = new mongoose.Schema({
-  idType: {
+  idRole: {
     type: Number,
+    unique: true,
   },
-  nameType: {
+  nameRole: {
     type: String,
   },
 });

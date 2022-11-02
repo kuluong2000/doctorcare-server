@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { default: slugify } = require("slugify");
-
+const Role = require("./../models/roleModel");
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -45,15 +45,26 @@ const userSchema = new mongoose.Schema(
     slugify: {
       type: String,
     },
-    idRole: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Role",
-    },
+    role: [
+      {
+        type: mongoose.Schema.Types.String,
+        ref: "Role",
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
+
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "_id",
+    select: "idRole",
+  });
+  next();
+});
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("./../models/userModel");
+const Role = require("./../models/roleModel");
 const catchAsync = require("./../utils/catchAysnc");
 const AppError = require("./../utils/appError");
 const signToken = (id) => {
@@ -31,12 +32,17 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log(req.body);
   const newUser = await User.create(req.body);
   createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
+  const test = await User.find({ username: username }).populate({
+    path: "_id",
+  });
+  console.log(test);
   //1) check username and password exist
   if (!username || !password) {
     return next(new AppError("please provide username and password", 400));
@@ -45,11 +51,32 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username });
 
   if (!user) {
-    return next(new AppError("Incorrect username ", 401));
+    return res.status(401).send({ error: "incorrect username" });
   }
   if (user.password !== password) {
-    return next(new AppError("Incorrect password ", 401));
+    return res.status(401).send({ error: "incorrect password" });
   }
   //if everything ok, send token to client
   createSendToken(user, 200, res);
+});
+//check role, cho phép user nào đucợ thao tác
+
+// exports.restrictTo = (...roles) => {
+//   return (req, res, next) => {
+//     console.log(req.users);
+//     // if (!roles.includes(req.user.role)) {
+//     //   return next(new AppError("You do not have permission to perform this action", 403));
+//     // }
+//     next();
+//   };
+// };
+
+exports.logout = catchAsync(async (req, res, next) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: "success",
+  });
 });
