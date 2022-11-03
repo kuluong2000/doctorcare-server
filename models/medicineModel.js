@@ -7,10 +7,6 @@ const medicineSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  department: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Department",
-  },
 });
 
 const Medicine = mongoose.model("Medicine", medicineSchema);
