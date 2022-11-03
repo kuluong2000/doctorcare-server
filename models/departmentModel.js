@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const slugify = require("slugify");
+const mongoose = require('mongoose');
+const slugify = require('slugify');
 const departmentSchema = new mongoose.Schema({
   nameDepartment: {
     type: String,
-    require: [true, "A name Department can not be empty"],
+    require: [true, 'A name Department can not be empty'],
     trim: true,
   },
   slugs: {
@@ -18,11 +18,15 @@ const departmentSchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  diseases: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Diseases',
+  },
 });
 
-departmentSchema.pre("save", function (next) {
+departmentSchema.pre('save', function (next) {
   this.slugs = slugify(this.nameDepartment, { lower: true });
   next();
 });
-const Department = mongoose.model("Department", departmentSchema);
+const Department = mongoose.model('Department', departmentSchema);
 module.exports = Department;

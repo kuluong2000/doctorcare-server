@@ -18,6 +18,7 @@ router
 
 router
   .route('/department/:id')
+
   .get(departmentController.getOneDepartment)
   .patch(departmentController.updateDepartment)
   .delete(departmentController.deleteDepartment);
@@ -31,6 +32,7 @@ router
 
 router
   .route('/diseases/:id')
+  .get(diseasesController.getALLDiseasesOfDepartment)
   .patch(diseasesController.updateDiseases)
   .delete(diseasesController.deleteDiseases);
 module.exports = router;

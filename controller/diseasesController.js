@@ -1,7 +1,7 @@
 const catchAsync = require('./../utils/catchAysnc');
 const AppError = require('./../utils/appError');
 const Diseases = require('./../models/diseasesModel');
-
+const Department = require('./../models/departmentModel');
 exports.getAllDiseases = catchAsync(async (req, res, next) => {
   const data = await Diseases.find().populate({
     path: 'department',
@@ -11,6 +11,16 @@ exports.getAllDiseases = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: data,
+  });
+});
+
+exports.getALLDiseasesOfDepartment = catchAsync(async (req, res, next) => {
+  let id = await Department.findOne({ slugs: req.params.id });
+
+  let query = await Diseases.find({ department: id._id });
+  res.status(200).json({
+    status: 'success',
+    data: query,
   });
 });
 
