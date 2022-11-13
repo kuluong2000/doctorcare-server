@@ -1,5 +1,5 @@
-const AppError = require("./../utils/appError");
-const catchAsync = require("./../utils/catchAysnc");
+const AppError = require("./../utils/appError"); // giống try catch
+const catchAsync = require("./../utils/catchAysnc"); // giống try catch
 const multer = require("multer");
 const sharp = require("sharp");
 const multerStorage = multer.memoryStorage();

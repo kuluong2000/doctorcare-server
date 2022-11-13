@@ -3,14 +3,23 @@ const router = express.Router();
 
 //import controller
 const adminController = require('./../controller/adminController');
+const doctorController = require('./../controller/doctorController');
 const departmentController = require('./../controller/departmentController');
 const diseasesController = require('./../controller/diseasesController');
 const positionController = require('./../controller/positionController');
 //role
 router.post('/role', adminController.createRole);
 
-//department
+//Doctor
+router
+  .route('/doctor')
+  .get(doctorController.getAllDoctor)
+  .post(doctorController.createDoctor);
 
+router.route('/doctor/:id').patch(doctorController.updateDoctor);
+
+router.route('/doctor/locked/:id').patch(doctorController.lockAccountDoctor);
+//department
 router
   .route('/department')
   .get(departmentController.getAllDepartment)

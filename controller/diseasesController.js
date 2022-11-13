@@ -36,7 +36,10 @@ exports.createDiseases = catchAsync(async (req, res, next) => {
 });
 
 exports.updateDiseases = catchAsync(async (req, res, next) => {
-  const data = await Diseases.findByIdAndUpdate(req.params.id, req.body);
+  const data = await Diseases.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   if (!data) return new AppError('Fail', 404);
   res.status(200).json({
     status: 'success',

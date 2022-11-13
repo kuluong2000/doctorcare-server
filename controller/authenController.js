@@ -1,9 +1,13 @@
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
-const User = require("./../models/userModel");
-const Role = require("./../models/roleModel");
-const catchAsync = require("./../utils/catchAysnc");
-const AppError = require("./../utils/appError");
+const jwt = require('jsonwebtoken');
+const catchAsync = require('./../utils/catchAysnc');
+const AppError = require('./../utils/appError');
+
+//Import Model
+const Role = require('./../models/roleModel');
+const People = require('./../models/peopleModel');
+const Account = require('./../models/accountModel');
+const Patient = require('../models/patientModel');
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     //thời gian sống của token
@@ -13,51 +17,89 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOLIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-
+    expires: new Date(
+      Date.now() + process.env.JWT_COOLIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
     httpOnly: true,
   };
   // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  res.cookie("jwt", token, cookieOptions);
+  res.cookie('jwt', token, cookieOptions);
   // Remove password from output
   user.password = undefined;
   res.status(statusCode).json({
-    status: "success",
+    status: 'success',
     token,
-    data: {
-      user,
-    },
+    data: user,
   });
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log(req.body);
-  const newUser = await User.create(req.body);
-  createSendToken(newUser, 201, res);
+  // 1 ) insert vào table People
+  try {
+    //check username có tồn tại hay chưa
+    const checkUsername = await Account.findOne({
+      username: req.body.username,
+    });
+    if (checkUsername)
+      return res.status(400).json({
+        status: 'username is exist',
+      });
+
+    const people = await People.create({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phone: req.body.phone,
+    });
+    // 2) dùng id của table  insert vào table Account
+    const account = await Account.create({
+      username: req.body.username,
+      password: req.body.password,
+      people: people._id,
+      role: req.body.role,
+    });
+    // 3) dùng id của Account insert vào table Patient
+    const patient = await Patient.create({
+      account: account._id,
+    });
+    const data = await patient.populate('account');
+    await data.account.populate('people');
+    res.status(201).json({
+      status: 'success',
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  // createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
-  const test = await User.find({ username: username }).populate({
-    path: "_id",
-  });
-  console.log(test);
+
+  const account = await Account.find({ username: username });
+  const patient = await Patient.find({ account: account[0]._id }).populate(
+    'account'
+  );
+  await patient[0].account.populate('people');
+
   //1) check username and password exist
   if (!username || !password) {
-    return next(new AppError("please provide username and password", 400));
+    return next(new AppError('please provide username and password', 400));
   }
   //2) check if username exists && password is correct
-  const user = await User.findOne({ username });
+  const user = await Account.findOne({ username });
 
   if (!user) {
-    return res.status(401).send({ error: "incorrect username" });
+    return res.status(401).send({ error: 'incorrect username' });
   }
   if (user.password !== password) {
-    return res.status(401).send({ error: "incorrect password" });
+    return res.status(401).send({ error: 'incorrect password' });
   }
-  //if everything ok, send token to client
-  createSendToken(user, 200, res);
+  // if everything ok, send token to client
+  createSendToken(patient, 200, res);
 });
 //check role, cho phép user nào đucợ thao tác
 
@@ -72,11 +114,11 @@ exports.login = catchAsync(async (req, res, next) => {
 // };
 
 exports.logout = catchAsync(async (req, res, next) => {
-  res.cookie("jwt", "loggedout", {
+  res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
   res.status(200).json({
-    status: "success",
+    status: 'success',
   });
 });

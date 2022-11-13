@@ -21,7 +21,10 @@ exports.createPosition = catchAsync(async (req, res, next) => {
   });
 });
 exports.updatePosition = catchAsync(async (req, res, next) => {
-  const data = await Position.findByIdAndUpdate(req.params.id, req.body);
+  const data = await Position.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   res.status(200).json({
     status: 'success',
     data: {

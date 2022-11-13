@@ -33,10 +33,17 @@ exports.createDepartment = catchAsync(async (req, res, next) => {
 exports.updateDepartment = catchAsync(async (req, res, next) => {
   const slugs = slugify(req.body.nameDepartment);
 
-  const data = await Department.findByIdAndUpdate(req.params.id, {
-    ...req.body,
-    slugs: slugs,
-  });
+  const data = await Department.findByIdAndUpdate(
+    req.params.id,
+    {
+      ...req.body,
+      slugs: slugs,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   res.status(200).json({
     status: 'success',
     data: {
