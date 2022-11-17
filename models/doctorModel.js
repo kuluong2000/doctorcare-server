@@ -13,9 +13,12 @@ const doctorSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Account',
   },
-  status: {
+  description: {
     type: String,
-    default: 'Hoạt Động',
+  },
+  status: {
+    type: Boolean,
+    default: true,
   },
 });
 

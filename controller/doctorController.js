@@ -62,6 +62,7 @@ exports.createDoctor = catchAsync(async (req, res, next) => {
     account: account._id,
     position: req.body.position,
     department: req.body.department,
+    description: req.body.description,
   });
   // dùng populate để tham chiếu dữ liệu của các bảng
   const data = await doctor.populate('account');
@@ -131,7 +132,7 @@ exports.lockAccountDoctor = catchAsync(async (req, res, next) => {
   await Doctor.findByIdAndUpdate(
     req.params.id,
     {
-      status: 'Khóa',
+      status: false,
     },
     {
       new: true,

@@ -7,6 +7,7 @@ const Role = require('./../models/roleModel');
 const People = require('./../models/peopleModel');
 const Account = require('./../models/accountModel');
 const Patient = require('../models/patientModel');
+const Doctor = require('../models/doctorModel');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -80,11 +81,37 @@ exports.login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
   const account = await Account.find({ username: username });
+  const role = await account[0].populate('role');
+  if (role?.role?.nameRole === 'admin' || role?.role?.nameRole === 'doctor') {
+    const doctor = await Doctor.find({ account: account[0]._id }).select('_id');
+    // .populate('role');
+
+    await account[0].populate('people');
+    // console.log({ ...account, doctor: doctor[0]._id });
+
+    //1) check username and password exist
+    if (!username || !password) {
+      return next(new AppError('please provide username and password', 400));
+    }
+    //2) check if username exists && password is correct
+    const user = await Account.findOne({ username });
+
+    if (!user) {
+      return res.status(401).send({ error: 'incorrect username' });
+    }
+    if (user.password !== password) {
+      return res.status(401).send({ error: 'incorrect password' });
+    }
+    if (doctor) {
+      return createSendToken({ account, doctor: doctor[0]?._id }, 200, res);
+    }
+    return createSendToken(account, 200, res);
+  }
   const patient = await Patient.find({ account: account[0]._id }).populate(
     'account'
   );
   await patient[0].account.populate('people');
-
+  await account[0].populate('people');
   //1) check username and password exist
   if (!username || !password) {
     return next(new AppError('please provide username and password', 400));

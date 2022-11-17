@@ -7,8 +7,13 @@ const doctorController = require('./../controller/doctorController');
 const departmentController = require('./../controller/departmentController');
 const diseasesController = require('./../controller/diseasesController');
 const positionController = require('./../controller/positionController');
+const bookingController = require('./../controller/bookingController');
 //role
 router.post('/role', adminController.createRole);
+
+//booking
+router.get('/booking', bookingController.getAllBooking);
+router.get('/booking/:id', bookingController.getAllBookingByDoctor);
 
 //Doctor
 router
