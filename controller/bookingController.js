@@ -29,8 +29,10 @@ exports.getAllBookingByPatient = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAllBookingByDoctor = catchAsync(async (req, res, next) => {
-  console.log(req.params.id);
-  const bookings = await Booking.find({ doctor: req.params.id })
+  const bookings = await Booking.find({
+    doctor: req.params.id,
+    date: req.query.date,
+  })
     .populate('patient')
     .populate('doctor', 'account')
     .populate('department');
@@ -87,11 +89,33 @@ exports.booking = catchAsync(async (req, res, next) => {
     doctor: doctors[idx],
     date: req.body.date,
     time: req.body.time,
+    price: req.body.price,
+    message: req.body.message,
     department: req.body.department,
   });
   const data = await booking.doctor.populate('account');
   await data.account.populate('people');
   res.status(201).json({
     data: booking,
+  });
+});
+
+exports.updateBooking = catchAsync(async (req, res, next) => {
+  const data = await Booking.findByIdAndUpdate(
+    req.params.id,
+    {
+      diseases: req.body.diseases,
+      note: req.body.note,
+      medicine: req.body.medicine,
+      status: true,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+    data,
   });
 });

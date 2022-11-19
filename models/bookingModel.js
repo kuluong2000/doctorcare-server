@@ -23,14 +23,20 @@ const bookingSchema = new mongoose.Schema({
     type: String,
   },
   medicine: {
-    type: String,
+    type: Array,
   },
   price: {
     type: Number,
   },
-  status: {
+  message: {
     type: String,
-    default: 'Chưa khám',
+  },
+  note: {
+    type: String,
+  },
+  status: {
+    type: Boolean,
+    default: false,
   },
 });
 

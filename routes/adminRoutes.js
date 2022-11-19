@@ -14,7 +14,7 @@ router.post('/role', adminController.createRole);
 //booking
 router.get('/booking', bookingController.getAllBooking);
 router.get('/booking/:id', bookingController.getAllBookingByDoctor);
-
+router.patch('/booking/:id', bookingController.updateBooking);
 //Doctor
 router
   .route('/doctor')
