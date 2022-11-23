@@ -18,6 +18,10 @@ const accountSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Role',
   },
+  status: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Account = mongoose.model('Account', accountSchema);

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 //import controller
+const accountController = require('./../controller/accountController');
 const adminController = require('./../controller/adminController');
 const doctorController = require('./../controller/doctorController');
 const departmentController = require('./../controller/departmentController');
@@ -10,6 +11,8 @@ const positionController = require('./../controller/positionController');
 const bookingController = require('./../controller/bookingController');
 //role
 router.post('/role', adminController.createRole);
+
+router.get('/account', accountController.getAllAccount);
 
 //booking
 router.get('/booking', bookingController.getAllBooking);

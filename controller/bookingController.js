@@ -1,6 +1,7 @@
 const catchAsync = require('./../utils/catchAysnc');
 const Booking = require('./../models/bookingModel');
 const Doctor = require('./../models/doctorModel');
+const Email = require('./../utils/email');
 
 // exports.getAllBooking = catchAsync(async (req, res, next) => {});
 exports.getAllBookingByPatient = catchAsync(async (req, res, next) => {
@@ -95,6 +96,15 @@ exports.booking = catchAsync(async (req, res, next) => {
   });
   const data = await booking.doctor.populate('account');
   await data.account.populate('people');
+  const dataEmail = {
+    email: req.body.email,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    time: req.body.time,
+    date: req.body.date,
+  };
+
+  await new Email(dataEmail).sendWelcome();
   res.status(201).json({
     data: booking,
   });
