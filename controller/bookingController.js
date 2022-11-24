@@ -94,17 +94,24 @@ exports.booking = catchAsync(async (req, res, next) => {
     message: req.body.message,
     department: req.body.department,
   });
+  await booking.populate('department', 'nameDepartment');
   const data = await booking.doctor.populate('account');
   await data.account.populate('people');
   const dataEmail = {
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    time: req.body.time,
+    birthday: req.body.birthday,
+    phone: req.body.phone,
+    message: req.body.message,
+    gender: req.body.gender,
+    doctor: `${booking.doctor.account.people.lastName} ${booking.doctor.account.people.firstName}`,
     date: req.body.date,
+    time: req.body.time,
+    department: booking.department.nameDepartment,
   };
 
-  await new Email(dataEmail).sendWelcome();
+  new Email(dataEmail).sendWelcome();
   res.status(201).json({
     data: booking,
   });

@@ -24,6 +24,8 @@ router
   .get(doctorController.getAllDoctor)
   .post(doctorController.createDoctor);
 
+router.get('/doctor/:id', doctorController.getAllDoctorOfDepartment);
+
 router.route('/doctor/:id').patch(doctorController.updateDoctor);
 
 router.route('/doctor/locked/:id').patch(doctorController.lockAccountDoctor);

@@ -28,6 +28,18 @@ exports.getAllDoctor = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getAllDoctorOfDepartment = catchAsync(async (req, res, next) => {
+  console.log(req.params.id);
+  const query = await Doctor.find({ department: req.params.id }).populate(
+    'account'
+  );
+  await Promise.all(query.map(async (doc) => doc.account.populate('people')));
+  res.status(200).json({
+    status: 'success',
+    data: query,
+  });
+});
+
 exports.createDoctor = catchAsync(async (req, res, next) => {
   //check username có tồn tại hay chưa
   const checkUsername = await Account.findOne({
