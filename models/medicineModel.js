@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const medicineSchema = new mongoose.Schema({
   nameMedicine: {
@@ -7,7 +7,10 @@ const medicineSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  quantity: {
+    type: Number,
+  },
 });
 
-const Medicine = mongoose.model("Medicine", medicineSchema);
+const Medicine = mongoose.model('Medicine', medicineSchema);
 module.exports = Medicine;

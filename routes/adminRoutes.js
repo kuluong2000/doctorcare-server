@@ -9,6 +9,8 @@ const departmentController = require('./../controller/departmentController');
 const diseasesController = require('./../controller/diseasesController');
 const positionController = require('./../controller/positionController');
 const bookingController = require('./../controller/bookingController');
+const medicineController = require('./../controller/medicineController');
+const statisticController = require('./../controller/statisticController');
 //role
 router.post('/role', adminController.createRole);
 
@@ -67,3 +69,18 @@ router
   .route('/position/:id')
   .patch(positionController.updatePosition)
   .delete(positionController.deletePosition);
+
+//Medicine
+
+router
+  .route('/medicine')
+  .get(medicineController.getAllMedicine)
+  .post(medicineController.createMedicine);
+router
+  .route('/medicine/:id')
+  .patch(medicineController.UpdateMedicine)
+  .delete(medicineController.deleteMedicine);
+
+//Statistic
+
+router.get('/statistic', statisticController.statisPatientByMonth);

@@ -30,9 +30,17 @@ exports.getAllBookingByPatient = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAllBookingByDoctor = catchAsync(async (req, res, next) => {
+  const start = new Date(req.query.date);
+  const end = new Date(req.query.date);
+  start.setUTCHours(0, 0, 0, 0);
+  end.setUTCHours(23, 59, 59, 999);
+
   const bookings = await Booking.find({
     doctor: req.params.id,
-    date: req.query.date,
+    date: {
+      $gte: start.toISOString(),
+      $lte: end.toISOString(),
+    },
   })
     .populate('patient')
     .populate('doctor', 'account')
@@ -85,16 +93,21 @@ exports.booking = catchAsync(async (req, res, next) => {
   const listDoctor = await Doctor.find({ department: req.body.department });
   const doctors = listDoctor.filter((el) => el.status === true);
   const idx = Math.floor(Math.random() * doctors.length);
+  console.log('doctor-idx', doctors[idx]._id);
+  console.log('doctor', req.body.doctor);
+
   const booking = await Booking.create({
     patient: req.body.patient,
-    doctor: doctors[idx],
+    doctor: req.body.doctor || doctors[idx]._id,
     date: req.body.date,
     time: req.body.time,
     price: req.body.price,
     message: req.body.message,
     department: req.body.department,
   });
-  await booking.populate('department', 'nameDepartment');
+  await (
+    await booking.populate('department', 'nameDepartment')
+  ).populate('doctor');
   const data = await booking.doctor.populate('account');
   await data.account.populate('people');
   const dataEmail = {
@@ -109,6 +122,7 @@ exports.booking = catchAsync(async (req, res, next) => {
     date: req.body.date,
     time: req.body.time,
     department: booking.department.nameDepartment,
+    price: req.body.price,
   };
 
   new Email(dataEmail).sendWelcome();
@@ -118,6 +132,7 @@ exports.booking = catchAsync(async (req, res, next) => {
 });
 
 exports.updateBooking = catchAsync(async (req, res, next) => {
+  console.log('debug', req.body);
   const data = await Booking.findByIdAndUpdate(
     req.params.id,
     {
@@ -131,6 +146,19 @@ exports.updateBooking = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
+  const dataEmail = {
+    email: req.body.patient.account.people.email,
+    firstName: req.body.patient.account.people.firstName,
+    lastName: req.body.patient.account.people.lastName,
+    department: req.body.department.nameDepartment,
+    doctor: `${req.body.doctor.account.people.lastName} ${req.body.doctor.account.people.firstName}`,
+    diseases: req.body.diseases,
+    note: req.body.note,
+    medicine: req.body.medicine,
+    message: req.body.message,
+    price: req.body.price,
+  };
+  new Email(dataEmail).sendAttachment();
   res.status(200).json({
     status: 'success',
     data,

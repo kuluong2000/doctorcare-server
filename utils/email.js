@@ -13,6 +13,10 @@ module.exports = class Email {
     this.date = user.date;
     this.time = user.time;
     this.department = user.department;
+    this.diseases = user.diseases;
+    this.medicine = user.medicine;
+    this.note = user.note;
+    this.price = user.price;
     this.from = `Jio Health <${process.env.EMAIL_FROM}>`;
   }
 
@@ -97,6 +101,72 @@ module.exports = class Email {
       </div>
     </div>`,
       'Cảm ơn bạn đã đặt lịch khám tại Jio Health'
+    );
+  }
+  async sendAttachment() {
+    await this.send(
+      `<div style="margin: 0 auto;">
+      <h2 style="margin: 0 0 5px 0;">
+        Cảm ơn bạn đã tin tưởng đặt lịch khám bệnh tại Hệ thống Jio Health
+      </h2>
+      <p style="margin: 0;">
+        Sau khi bạn đã khám tại phòng khám của bác sĩ ${this.doctor}, bạn có thể
+        xem lại chi tiết lịch khám bệnh từ email này
+      </p>
+      <table
+        style="
+            margin-top: 20px;
+            border: 1px solid red;
+            border-collapse: collapse;
+        "
+      >
+        <tbody>
+          <tr style="height: 30px;">
+            <td  style="text-align: center; border: 1px solid black; width: 100px;">Họ và tên</td>
+            <td  style="margin-left: 10px; padding: 10px; border: 1px solid black;">
+              ${this.lastName} ${this.firstName}
+            </td>
+          </tr>
+           <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Bác sĩ Khám</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">
+              ${this.doctor}
+            </td>
+          </tr>
+          </tr>
+           <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Khoa khám</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">
+              ${this.department}
+            </td>
+          </tr>
+          <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Chẩn đoán</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">${this.diseases}</td>
+          </tr>
+          <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Thuốc</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">${this.medicine}</td>
+          </tr>
+          <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Ghi chú</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">${this.note}</td>
+          </tr>
+          <tr style="height: 30px;">
+            <td style="text-align: center; border: 1px solid black;">Giá tiền</td>
+            <td style="margin-left: 10px; padding: 10px; border: 1px solid black;">${this.price} VNĐ</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin: 10px 0 0 0;">
+        Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi
+      </p>
+      <p style="margin: 10px 0 0 0;">
+        Nếu bạn có gì thắc mắc, vui lòng liên hệ hotline
+        <strong> 19001010</strong> để được giải đáp.
+      </p>
+    </div>`,
+      'Jio Health-Chăm sóc sức khỏe cho mọi người'
     );
   }
 };
