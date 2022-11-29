@@ -39,13 +39,17 @@ router
 
 router
   .route('/department/:id')
-
   .get(departmentController.getOneDepartment)
   .patch(departmentController.updateDepartment)
   .delete(departmentController.deleteDepartment);
 
-//Diseases
+//get All department of diseases
+router.get(
+  '/departmentOfDiseases',
+  departmentController.getAllDepartmentOfDiseases
+);
 
+//Diseases
 router
   .route('/diseases')
   .get(diseasesController.getAllDiseases)

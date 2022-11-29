@@ -12,7 +12,7 @@ const diseasesSchema = new mongoose.Schema({
     ref: 'Department',
   },
 });
-
+diseasesSchema.index({ nameDiseases: 'text' });
 const Diseases = mongoose.model('Diseases', diseasesSchema);
 
 module.exports = Diseases;

@@ -1,5 +1,6 @@
 const AppError = require('./../utils/appError');
 const Department = require('./../models/departmentModel');
+const Diseases = require('./../models/diseasesModel');
 const catchAsync = require('./../utils/catchAysnc');
 const slugify = require('slugify');
 exports.getAllDepartment = catchAsync(async (req, res, next) => {
@@ -10,6 +11,36 @@ exports.getAllDepartment = catchAsync(async (req, res, next) => {
     data,
   });
 });
+
+exports.getAllDepartmentOfDiseases = catchAsync(async (req, res, next) => {
+  // const key = req.query.
+  if (req.query.nameDiseases) {
+    const data = await Diseases.find({
+      nameDiseases: req.query.nameDiseases,
+    }).populate('department');
+
+    if (data.length) {
+      return res.status(200).json({
+        status: 'success',
+        data: [data[0].department],
+      });
+    } else {
+      return res.status(200).json({
+        status: 'success',
+        data: null,
+      });
+    }
+
+    // const data = [query[0].department];
+  } else {
+    const data = await Department.find();
+    return res.status(200).json({
+      status: 'success',
+      data,
+    });
+  }
+});
+
 exports.getOneDepartment = catchAsync(async (req, res, next) => {
   let query = await Department.findOne({ slugs: req.params.id });
   res.status(200).json({
