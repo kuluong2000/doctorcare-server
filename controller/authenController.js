@@ -107,6 +107,9 @@ exports.login = catchAsync(async (req, res, next) => {
     }
     return createSendToken(account, 200, res);
   }
+  if (account[0].status === true) {
+    return res.status(401).send({ error: 'Tài khoản đã bị khóa' });
+  }
   const patient = await Patient.find({ account: account[0]._id }).populate(
     'account'
   );
@@ -120,10 +123,10 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await Account.findOne({ username });
 
   if (!user) {
-    return res.status(401).send({ error: 'incorrect username' });
+    return res.status(401).send({ error: 'Tài khoản không chính xác' });
   }
   if (user.password !== password) {
-    return res.status(401).send({ error: 'incorrect password' });
+    return res.status(401).send({ error: 'Mật khẩu không chính xác' });
   }
   // if everything ok, send token to client
   createSendToken(patient, 200, res);

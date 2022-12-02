@@ -140,11 +140,10 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
 });
 
 exports.lockAccountDoctor = catchAsync(async (req, res, next) => {
-  console.log('debug', req.params.id);
   await Doctor.findByIdAndUpdate(
     req.params.id,
     {
-      status: false,
+      status: req.body.status,
     },
     {
       new: true,

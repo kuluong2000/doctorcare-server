@@ -15,6 +15,11 @@ const statisticController = require('./../controller/statisticController');
 router.post('/role', adminController.createRole);
 
 router.get('/account', accountController.getAllAccount);
+router.patch('/account/:id', accountController.updateAccount);
+router.patch(
+  '/account/lockOrUnlock/:id',
+  accountController.lockOrUnlockAccount
+);
 
 //booking
 router.get('/booking', bookingController.getAllBooking);
