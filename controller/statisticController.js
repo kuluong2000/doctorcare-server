@@ -39,8 +39,34 @@ exports.statisPatientByMonth = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-
-  res.json(stats);
+  const count = await Booking.aggregate([
+    {
+      $project: {
+        doctor: '$doctor',
+        hour: '$time',
+        day: { $dayOfMonth: '$date' },
+        month: { $month: '$date' },
+        year: { $year: '$date' },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          day: '$day',
+          month: '$month',
+          year: '$year',
+          hour: '$hour',
+          doctor: { $toString: '$doctor' },
+        },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+  // res.json(stats);
+  res.json(count);
   // res.status(200).json({
   //   status: 'success',
   //   stats,

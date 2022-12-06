@@ -93,42 +93,92 @@ exports.booking = catchAsync(async (req, res, next) => {
   const listDoctor = await Doctor.find({ department: req.body.department });
   const doctors = listDoctor.filter((el) => el.status === true);
   const idx = Math.floor(Math.random() * doctors.length);
-  console.log('doctor-idx', doctors[idx]._id);
-  console.log('doctor', req.body.doctor);
+  const doctor = req.body.doctor || doctors[idx]._id;
+  const hour = req.body.time;
+  const day = new Date(req.body.date).getDate();
+  const month = new Date(req.body.date).getMonth() + 1;
+  const count = await Booking.aggregate([
+    {
+      $project: {
+        doctor: '$doctor',
+        hour: '$time',
+        day: { $dayOfMonth: '$date' },
+        month: { $month: '$date' },
+        year: { $year: '$date' },
+      },
+    },
+    {
+      $match: {
+        day: Number(day),
+        month: Number(month),
+      },
+    },
+    {
+      $group: {
+        _id: {
+          day: '$day',
+          month: '$month',
+          year: '$year',
+          hour: '$hour',
+          doctor: { $toString: '$doctor' },
+        },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
 
-  const booking = await Booking.create({
-    patient: req.body.patient,
-    doctor: req.body.doctor || doctors[idx]._id,
-    date: req.body.date,
-    time: req.body.time,
-    price: req.body.price,
-    message: req.body.message,
-    department: req.body.department,
-  });
-  await (
-    await booking.populate('department', 'nameDepartment')
-  ).populate('doctor');
-  const data = await booking.doctor.populate('account');
-  await data.account.populate('people');
-  const dataEmail = {
-    email: req.body.email,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    birthday: req.body.birthday,
-    phone: req.body.phone,
-    message: req.body.message,
-    gender: req.body.gender,
-    doctor: `${booking.doctor.account.people.lastName} ${booking.doctor.account.people.firstName}`,
-    date: req.body.date,
-    time: req.body.time,
-    department: booking.department.nameDepartment,
-    price: req.body.price,
-  };
+  const counter = count.filter(
+    (item) =>
+      item._id.day === day &&
+      item._id.month === month &&
+      item._id.hour === hour &&
+      item._id.doctor === doctor
+  );
+  console.log(counter);
+  if (counter[0]?.total > 5)
+    return res.status(400).send({
+      error:
+        'số lượng bệnh nhân tại khung giờ này đã hết, xin vui lòng chọn khung giờ khác',
+    });
+  else {
+    const booking = await Booking.create({
+      patient: req.body.patient,
+      doctor: req.body.doctor || doctors[idx]._id,
+      date: req.body.date,
+      time: req.body.time,
+      price: req.body.price,
+      message: req.body.message,
+      department: req.body.department,
+    });
 
-  new Email(dataEmail).sendWelcome();
-  res.status(201).json({
-    data: booking,
-  });
+    await (
+      await booking.populate('department', 'nameDepartment')
+    ).populate('doctor');
+    const data = await booking.doctor.populate('account');
+    await data.account.populate('people');
+    const dataEmail = {
+      email: req.body.email,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      birthday: req.body.birthday,
+      phone: req.body.phone,
+      message: req.body.message,
+      gender: req.body.gender,
+      doctor: `${booking.doctor.account.people.lastName} ${booking.doctor.account.people.firstName}`,
+      date: req.body.date,
+      time: req.body.time,
+      department: booking.department.nameDepartment,
+      price: req.body.price,
+    };
+
+    new Email(dataEmail).sendWelcome();
+    res.status(201).json({
+      data: booking,
+    });
+  }
 });
 
 exports.updateBooking = catchAsync(async (req, res, next) => {
