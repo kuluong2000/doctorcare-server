@@ -65,8 +65,8 @@ exports.statisPatientByMonth = catchAsync(async (req, res, next) => {
       $sort: { _id: 1 },
     },
   ]);
-  // res.json(stats);
-  res.json(count);
+  res.json(stats);
+  // res.json(count);
   // res.status(200).json({
   //   status: 'success',
   //   stats,
