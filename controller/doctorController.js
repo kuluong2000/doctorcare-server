@@ -141,8 +141,11 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
 });
 
 exports.lockAccountDoctor = catchAsync(async (req, res, next) => {
-  await Doctor.findByIdAndUpdate(
-    req.params.id,
+  const doctor = await Doctor.findById(req.params.id).populate('account');
+  console.log(doctor.account._id);
+  console.log(req.body.status);
+  await Account.findByIdAndUpdate(
+    doctor.account._id,
     {
       status: req.body.status,
     },

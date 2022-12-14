@@ -88,19 +88,21 @@ exports.login = catchAsync(async (req, res, next) => {
 
     await account[0].populate('people');
     // console.log({ ...account, doctor: doctor[0]._id });
-
+    // console.log(doctor);
     //1) check username and password exist
     if (!username || !password) {
       return next(new AppError('please provide username and password', 400));
     }
-    //2) check if username exists && password is correct
+    //3) check if username exists && password is correct
     const user = await Account.findOne({ username });
-
     if (!user) {
       return res.status(401).send({ error: 'incorrect username' });
     }
     if (user.password !== password) {
       return res.status(401).send({ error: 'incorrect password' });
+    }
+    if (account[0].status === true) {
+      return res.status(401).send({ error: 'Tài khoản đã bị khóa' });
     }
     if (doctor) {
       return createSendToken({ account, doctor: doctor[0]?._id }, 200, res);

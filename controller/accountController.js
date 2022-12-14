@@ -20,6 +20,7 @@ exports.updateAccount = catchAsync(async (req, res, next) => {
   });
 });
 exports.lockOrUnlockAccount = catchAsync(async (req, res, next) => {
+  console.log(req.params.id);
   const data = await Account.findByIdAndUpdate(
     req.params.id,
     {

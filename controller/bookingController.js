@@ -184,8 +184,7 @@ exports.booking = catchAsync(async (req, res, next) => {
       .create({
         body: 'Test booking',
         from: '+19036485267',
-        // to: `+84${req.body.phone}`,
-        to: `+84376144372`,
+        to: `+84${req.body.phone}`,
       })
       .then((message) => console.log(message.sid));
     new Email(dataEmail).sendWelcome();
