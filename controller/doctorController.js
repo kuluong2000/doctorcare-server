@@ -1,3 +1,4 @@
+const cron = require('node-cron');
 const catchAsync = require('./../utils/catchAysnc');
 const Doctor = require('./../models/doctorModel');
 const Account = require('./../models/accountModel');
@@ -153,4 +154,47 @@ exports.lockAccountDoctor = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
   });
+});
+
+exports.lockScheduleOfDoctor = catchAsync(async (req, res, next) => {
+  const idDoctor = req.params.id;
+  const timer = req.body.timer;
+  if (timer && timer <= new Date().getTime()) {
+  }
+  console.log(typeof timer);
+  // console.log(new Date().getTime());
+  console.log(timer > new Date().getTime());
+  const data = await Doctor.findByIdAndUpdate(
+    idDoctor,
+    {
+      status: req.body.status,
+      timeStamp: timer,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+async function autoUnLockScheduleOfDoctor() {
+  const timeStamp = new Date().getTime();
+  const doctors = await Doctor.find();
+  const filter = doctors.filter((item) => item.timeStamp != null);
+  filter.map(async (item) => {
+    if (item.timeStamp <= timeStamp) {
+      return await Doctor.updateMany({
+        status: true,
+        timeStamp: null,
+      });
+    }
+  });
+}
+
+cron.schedule('*/1 * * * *', () => {
+  autoUnLockScheduleOfDoctor();
+  console.log('server reload');
 });

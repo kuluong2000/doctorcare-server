@@ -36,6 +36,9 @@ router.get('/doctor/:id', doctorController.getAllDoctorOfDepartment);
 router.route('/doctor/:id').patch(doctorController.updateDoctor);
 
 router.route('/doctor/locked/:id').patch(doctorController.lockAccountDoctor);
+router
+  .route('/doctor/lockScheduleOfDoctor/:id')
+  .patch(doctorController.lockScheduleOfDoctor);
 //department
 router
   .route('/department')

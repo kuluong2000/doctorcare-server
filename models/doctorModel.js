@@ -20,6 +20,10 @@ const doctorSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  timeStamp: {
+    type: Number,
+    default: null,
+  },
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);

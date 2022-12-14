@@ -24,7 +24,7 @@ exports.statisPatientByMonth = catchAsync(async (req, res, next) => {
       $group: {
         _id: '$day',
         // booking: { $push: '$$ROOT' },
-        total: { $sum: 1 },
+        value: { $sum: 1 },
       },
     },
     {
@@ -35,37 +35,18 @@ exports.statisPatientByMonth = catchAsync(async (req, res, next) => {
         _id: 1,
         day: '$_id',
         // booking: 1,
-        total: 1,
+        value: 1,
       },
     },
   ]);
-  const count = await Booking.aggregate([
-    {
-      $project: {
-        doctor: '$doctor',
-        hour: '$time',
-        day: { $dayOfMonth: '$date' },
-        month: { $month: '$date' },
-        year: { $year: '$date' },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          day: '$day',
-          month: '$month',
-          year: '$year',
-          hour: '$hour',
-          doctor: { $toString: '$doctor' },
-        },
-        total: { $sum: 1 },
-      },
-    },
-    {
-      $sort: { _id: 1 },
-    },
-  ]);
-  res.json(stats);
+
+  const statistic = stats.map((item) => {
+    item.day = `ngày ${item.day}`;
+    item.value = `${item.value} bệnh nhân`;
+    return item;
+  });
+
+  res.json(statistic);
   // res.json(count);
   // res.status(200).json({
   //   status: 'success',
