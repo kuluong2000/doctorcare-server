@@ -51,6 +51,12 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send(
       `<div style="margin: 0 auto; width: 100%;">
+      <div>
+        <h3>xin chào ${this.firstName}.</h3>
+        <p>Chúng tôi có nhận được một lịch hẹn khám từ ${
+          this.firstName
+        }. Chúng tôi rất lấy làm vinh dự khi được sự tin tưởng từ bạn. Dưới đây là thông tin chi tiết lịch khám của bạn. Nếu có thắc mắc xin vui lòng liên hệ vào hotline <strong>19001010</strong> để được giải đáp thắc mắc</p>
+      </div>
       <div style="width: max-content;">
         <h2 style="margin: 0; color: #111c63;">Dịch vụ</h2>
         <div style="display: flex;">
@@ -93,7 +99,7 @@ module.exports = class Email {
             <p style="margin-right: 10px;">Chuyên khoa:</p>
           </div>
           <div>
-            <p>${this.date}</p>
+            <p>${new Date(this.date).toLocaleDateString()}</p>
             <p>${this.time}</p>
             <p>${this.department}</p>
           </div>
@@ -170,39 +176,3 @@ module.exports = class Email {
     );
   }
 };
-// const nodemailer = require('nodemailer');
-// const htmlToText = require('html-to-text');
-
-// module.exports = class Email {
-//   constructor(user) {
-//     this.to = 'luong@mailsac.com';
-//     this.firstName = user.firstName;
-//     this.from = `luong tran<${process.env.EMAIL_FROM}>`;
-//   }
-//   newTransport() {
-//     return nodemailer.createTransport({
-//       // service: 'SendGrid',
-//       host: 'smtp.sendgrid.net',
-//       port: 587,
-//       secure: false,
-//       auth: {
-//         user: process.env.SENDGRID_USERNAME,
-//         pass: process.env.SENDGRID_PASSWORD,
-//       },
-//     });
-//   }
-//   async send(subject) {
-//     // 2) Define email options
-//     const mailOptions = {
-//       from: this.from,
-//       to: this.to,
-//       subject,
-//       text: 'demo',
-//     };
-//     // 3) Create a transport and send email
-//     await this.newTransport().sendMail(mailOptions);
-//   }
-//   async sendWelcome() {
-//     await this.send('welcome to jio health');
-//   }
-// };

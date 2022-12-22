@@ -179,14 +179,17 @@ exports.booking = catchAsync(async (req, res, next) => {
       department: booking.department.nameDepartment,
       price: req.body.price,
     };
+    console.log(req.body.phone);
 
     client.messages
       .create({
-        body: 'Test booking',
-        from: '+19036485267',
+        body: `Cảm ơn bạn đã tin tưởng và đặt lịch ở phòng khám Jio Health. Lịch khám của bạn sẽ bắt đầu vào ngày ${new Date(
+          req.body.date
+        ).toLocaleDateString()} vào lúc ${req.body.time}  `,
+        from: '+19737919560',
         to: `+84${req.body.phone}`,
       })
-      .then((message) => console.log(message.sid));
+      .then((message) => console.log('message', message.sid));
     new Email(dataEmail).sendWelcome();
     res.status(201).json({
       data: booking,
