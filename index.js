@@ -4,6 +4,11 @@ var cors = require('cors');
 var morgan = require('morgan');
 const bodyParser = require('body-parser');
 
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: './config.env' });
+
 // import Routes
 const authenRoutes = require('./routes/authenRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -32,5 +37,25 @@ app.use('/api/upload', uploadImageRoutes);
 app.get('/', (req, res) => {
   res.send('NO thing:3');
 });
+
+//server
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
+
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    autoIndex: true, //make this also true
+  })
+  .then(() => console.log('DB connection successful!'))
+  .catch((err) => console.log('error'));
+
+let port = 3030;
+app.listen(port, () => {
+  console.log(`App running on port ${port}...`);
+});
+
 // START SERVER
 module.exports = app;
