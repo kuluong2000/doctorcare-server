@@ -29,6 +29,8 @@ app.use('/api/authen', authenRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadImageRoutes);
-
+app.get('/', (req, res) => {
+  res.send('NO thing:3');
+});
 // START SERVER
 module.exports = app;
