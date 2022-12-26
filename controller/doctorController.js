@@ -28,6 +28,18 @@ exports.getAllDoctor = catchAsync(async (req, res, next) => {
     data: doctors,
   });
 });
+exports.getDoctor = catchAsync(async (req, res, next) => {
+  const idDoctor = req.params.id;
+  const doctor = await Doctor.findById(idDoctor)
+    .populate('position')
+    .populate('department')
+    .populate('account');
+  await doctor.account.populate('people');
+  res.status(200).json({
+    status: 'success',
+    data: doctor,
+  });
+});
 
 exports.getAllDoctorOfDepartment = catchAsync(async (req, res, next) => {
   console.log(req.params.id);
