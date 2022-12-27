@@ -16,6 +16,12 @@ const doctorSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  education: {
+    type: String,
+  },
+  oldWork: {
+    type: String,
+  },
   status: {
     type: Boolean,
     default: true,

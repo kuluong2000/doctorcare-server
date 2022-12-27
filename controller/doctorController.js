@@ -88,6 +88,8 @@ exports.createDoctor = catchAsync(async (req, res, next) => {
     position: req.body.position,
     department: req.body.department,
     description: req.body.description,
+    education: req.body.education,
+    oldWork: req.body.oldWork,
   });
   // dùng populate để tham chiếu dữ liệu của các bảng
   const data = await doctor.populate('account');
@@ -106,6 +108,8 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
   await Doctor.findByIdAndUpdate(query._id, {
     position: req.body.position,
     department: req.body.department,
+    education: req.body.education,
+    oldWork: req.body.oldWork,
   });
   const account = await Account.findByIdAndUpdate(query.account, {
     username: req.body.username,
