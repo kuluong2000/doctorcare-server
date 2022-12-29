@@ -3,30 +3,61 @@ const catchAsync = require('./../utils/catchAysnc');
 const Doctor = require('./../models/doctorModel');
 const Account = require('./../models/accountModel');
 const People = require('./../models/peopleModel');
-
+const ObjectId = require('mongodb').ObjectId;
 exports.getAllDoctor = catchAsync(async (req, res, next) => {
-  const doctors = await Doctor.find()
-    .populate({
-      path: 'department',
-      select: 'nameDepartment ',
-    })
-    .populate({
-      path: 'position',
-      select: 'namePosition ',
-    })
-    .populate('account');
+  const nameDoctor = req.query.nameDoctor;
+  if (req.query.nameDoctor) {
+    const people = await People.find({ $text: { $search: nameDoctor } });
+    const people_ids = people.map(function (item) {
+      return ObjectId(item._id);
+    });
+    const account = await Account.find({ people: { $in: people_ids } });
+    const doctor_ids = account.map((item) => ObjectId(item._id));
+    const doctor = await Doctor.find({ account: { $in: doctor_ids } })
+      .populate({
+        path: 'department',
+        select: 'nameDepartment ',
+      })
+      .populate({
+        path: 'position',
+        select: 'namePosition ',
+      })
+      .populate('account');
+    await Promise.all(
+      doctor.map(async (doc) => {
+        const data = await doc.account.populate('people');
+        await data.populate('role');
+        return data;
+      })
+    );
+    res.status(200).json({
+      status: 'success',
+      data: doctor,
+    });
+  } else {
+    const doctors = await Doctor.find()
+      .populate({
+        path: 'department',
+        select: 'nameDepartment ',
+      })
+      .populate({
+        path: 'position',
+        select: 'namePosition ',
+      })
+      .populate('account');
 
-  await Promise.all(
-    doctors.map(async (doc) => {
-      const data = await doc.account.populate('people');
-      await data.populate('role');
-      return data;
-    })
-  );
-  res.status(200).json({
-    status: 'success',
-    data: doctors,
-  });
+    await Promise.all(
+      doctors.map(async (doc) => {
+        const data = await doc.account.populate('people');
+        await data.populate('role');
+        return data;
+      })
+    );
+    res.status(200).json({
+      status: 'success',
+      data: doctors,
+    });
+  }
 });
 exports.getDoctor = catchAsync(async (req, res, next) => {
   const idDoctor = req.params.id;
