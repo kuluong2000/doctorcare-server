@@ -44,6 +44,11 @@ router.route('/doctor/locked/:id').patch(doctorController.lockAccountDoctor);
 router
   .route('/doctor/lockScheduleOfDoctor/:id')
   .patch(doctorController.lockScheduleOfDoctor);
+
+router
+  .route('/doctor/unLockScheduleOfDoctor/:id')
+  .patch(doctorController.UnLockScheduleOfDoctor);
+
 //department
 router
   .route('/department')

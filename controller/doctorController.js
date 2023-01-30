@@ -229,6 +229,24 @@ exports.lockScheduleOfDoctor = catchAsync(async (req, res, next) => {
     status: 'success',
   });
 });
+exports.UnLockScheduleOfDoctor = catchAsync(async (req, res, next) => {
+  const idDoctor = req.params.id;
+
+  await Doctor.findByIdAndUpdate(
+    idDoctor,
+    {
+      status: true,
+      timeStamp: null,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+  });
+});
 
 async function autoUnLockScheduleOfDoctor() {
   const timeStamp = new Date().getTime();
